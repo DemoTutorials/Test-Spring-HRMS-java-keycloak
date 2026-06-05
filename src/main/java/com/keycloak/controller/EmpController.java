@@ -87,8 +87,8 @@ public class EmpController {
 		    }
 	}
 	
-
-	@PostMapping("/signin")
+/*
+	@PostMapping("/login")
 	public ResponseEntity<?> signin(@RequestBody UserDTO userDTO) {
 
 		Map<String, Object> clientCredentials = new HashMap<>();
@@ -102,6 +102,7 @@ public class EmpController {
 
 		return ResponseEntity.ok(response);
 	}
+*/
 
 	@PostMapping("/create")
 	public ResponseEntity<?> createUser(@RequestBody  UserDTO userDTO) {

@@ -63,8 +63,8 @@ public class EmpController {
 	@GetMapping("/get-all")
 	public ResponseEntity<?> getAllUsers() throws IOException, InterruptedException, URISyntaxException {
 		 Keycloak keycloak = KeycloakBuilder.builder().serverUrl(authServerUrl)
-		            .grantType(OAuth2Constants.PASSWORD).realm("master")
-		            .clientId("admin-cli").username("admin").password("1234")
+		            .grantType(OAuth2Constants.PASSWORD).realm("Training")
+		            .clientId("emp-management").username("admin").password("admin")
 		            .resteasyClient(new ResteasyClientBuilderImpl().connectionPoolSize(10).build())
 		            .build();
 
@@ -73,7 +73,7 @@ public class EmpController {
 //		    keycloak.realm(realm).users().
 
 		    HttpRequest request = HttpRequest.newBuilder()
-		            .uri(new URI("http://localhost:8080/admin/realms/quickstart/users"))
+		            .uri(new URI("http://localhost:8081/admin/realms/quickstart/users"))
 		            .header("Authorization", "Bearer " + accessToken)
 		            .build();
 
@@ -108,7 +108,7 @@ public class EmpController {
 	public ResponseEntity<?> createUser(@RequestBody  UserDTO userDTO) {
 
 		Keycloak keycloak = KeycloakBuilder.builder().serverUrl(authServerUrl).grantType(OAuth2Constants.PASSWORD)
-				.realm("master").clientId("admin-cli").username("admin").password("1234")
+				.realm("Training").clientId("emp-management").username("admin").password("admin")
 				.resteasyClient(new ResteasyClientBuilderImpl().connectionPoolSize(10).build()).build();
 
 		keycloak.tokenManager().getAccessToken();

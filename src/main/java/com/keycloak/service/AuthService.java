@@ -1,10 +1,8 @@
 package com.keycloak.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.keycloak.authorization.client.AuthzClient;
-import org.keycloak.authorization.client.Configuration;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,36 +27,32 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
-        Map<String, Object> credentials = new HashMap<>();
+        try {
 
-        credentials.put("secret", clientSecret);
-        credentials.put("grant_type", "password");
+            Keycloak keycloak = KeycloakBuilder.builder()
+                    .serverUrl(authServerUrl)
+                    .realm(realm)
+                    .grantType(OAuth2Constants.PASSWORD)
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .username(request.getUserName())
+                    .password(request.getPassword())
+                    .build();
 
-        Configuration config =
-                new Configuration(
-                        authServerUrl,
-                        realm,
-                        clientId,
-                        credentials,
-                        null);
+            AccessTokenResponse tokenResponse =
+                    keycloak.tokenManager().getAccessToken();
 
-        AuthzClient authzClient =
-                AuthzClient.create(config);
+            LoginResponse response = new LoginResponse();
+            response.setJwtToken(tokenResponse.getToken());
+            response.setUsername(request.getUserName());
+            response.setOrgCode("AVISYS");
+            response.setDivision("ADMIN");
+            response.setRole("ADMIN");
 
-        AccessTokenResponse token =
-                authzClient.obtainAccessToken(
-                        request.getUserName(),
-                        request.getPassword());
+            return response;
 
-        LoginResponse response = new LoginResponse();
-
-        response.setJwtToken(token.getToken());
-        response.setUsername(request.getUserName());
-
-        response.setOrgCode("AVISYS");
-        response.setDivision("ADMIN");
-        response.setRole("ADMIN");
-
-        return response;
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid username or password");
+        }
     }
 }
